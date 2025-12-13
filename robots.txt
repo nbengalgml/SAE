@@ -1,0 +1,12 @@
+# Robots.txt for Shaham Electronics Aviation Ltd.
+# https://nbengalgml.github.io/SAE/
+
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://nbengalgml.github.io/SAE/sitemap.xml
+
+# Disallow backup folder
+Disallow: /backup-v1/
+
