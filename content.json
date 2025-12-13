@@ -234,13 +234,13 @@
     },
     "details": {
       "address": {
-        "line1": "8 Ha Melaha St.",
-        "line2": "P.O.Box 8199 Industry Area",
+        "line1": "P.O.Box 8199 Industry Area",
+        "line2": "",
         "line3": "Natanya South 42293, Israel"
       },
-      "phone": "972-9-8851511",
-      "fax": "972-9-8851513",
-      "email": "shahamav@netvision.net.il",
+      "phone": "972-53-6235799",
+      "fax": "972-3-8851513",
+      "email": "yair@ybgal.com",
       "hours": {
         "weekdays": "Sunday - Thursday: 8:00 - 17:00",
         "friday": "Friday: 8:00 - 13:00"
