@@ -291,15 +291,14 @@
                             <div class="form-group full-width">
                                 <label>Logo</label>
                                 <div class="image-upload-area" id="logo-upload">
-                                    <div class="current-image" id="current-logo">
+                                    <div class="current-image editable-image" id="current-logo" onclick="openImagePicker(this, 'site.logo')">
                                         <img src="" alt="Current Logo" id="logo-preview">
                                     </div>
                                     <div class="upload-controls">
-                                        <input type="file" id="logo-file" accept="image/*" hidden>
-                                        <button class="btn btn-secondary" onclick="document.getElementById('logo-file').click()">
-                                            <span>📤</span> Upload New Logo
+                                        <button class="btn btn-secondary" onclick="openImagePicker(document.getElementById('current-logo'), 'site.logo')">
+                                            <span>📷</span> Change Logo
                                         </button>
-                                        <span class="upload-hint">Recommended: PNG with transparent background</span>
+                                        <span class="upload-hint">Click the image or button to change</span>
                                     </div>
                                 </div>
                             </div>
@@ -381,6 +380,43 @@
             </div>
             <div class="preview-frame-container">
                 <iframe id="previewFrame" src="../index.html"></iframe>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Image Picker Modal -->
+    <div class="modal" id="imagePickerModal">
+        <div class="modal-content image-picker-modal">
+            <div class="modal-header">
+                <h2>📷 Select Image</h2>
+                <button class="modal-close" onclick="closeImagePicker()">×</button>
+            </div>
+            <div class="image-picker-content">
+                <div class="image-picker-tabs">
+                    <button class="picker-tab active" data-tab="upload">Upload New</button>
+                    <button class="picker-tab" data-tab="library">Media Library</button>
+                </div>
+                
+                <div class="picker-panel active" id="panel-upload">
+                    <div class="upload-drop-area" id="picker-dropzone">
+                        <span class="dropzone-icon">📤</span>
+                        <p>Drag & drop an image here</p>
+                        <span>or</span>
+                        <input type="file" id="picker-file-input" accept="image/*" hidden>
+                        <button class="btn btn-primary" onclick="document.getElementById('picker-file-input').click()">
+                            Choose File
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="picker-panel" id="panel-library">
+                    <div class="picker-library-grid" id="picker-library-grid">
+                        <!-- Library images will be populated by JS -->
+                    </div>
+                    <p class="empty-library-msg" id="empty-library-msg" style="display: none;">
+                        No images in library. Upload some first!
+                    </p>
+                </div>
             </div>
         </div>
     </div>

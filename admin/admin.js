@@ -4,6 +4,7 @@
 let content = {};
 let hasUnsavedChanges = false;
 let mediaLibrary = [];
+let currentImageTarget = null; // For image picker
 
 // GitHub Config
 const GITHUB_CONFIG = {
@@ -29,6 +30,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     setupImageUploads();
     setupMediaLibrary();
     setupGitHubSettings();
+    setupImagePicker();
     populateEditors();
 });
 
@@ -351,6 +353,9 @@ function populateCategories() {
 }
 
 function createProductItem(catIndex, prodIndex, product) {
+    const imageUrl = product.image || '';
+    const hasImage = imageUrl && imageUrl.length > 0;
+    
     return `
         <div class="editable-item">
             <div class="editable-item-header">
@@ -360,7 +365,16 @@ function createProductItem(catIndex, prodIndex, product) {
                 </div>
             </div>
             <div class="form-grid">
-                <div class="form-group full-width">
+                <div class="form-group">
+                    <label>Product Image</label>
+                    <div class="product-image-edit editable-image" onclick="openImagePicker(this, 'products.categories[${catIndex}].products[${prodIndex}].image')" style="width: 100%; height: 80px; background: var(--admin-bg); border-radius: var(--radius); display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                        ${hasImage 
+                            ? `<img src="${escapeHtml(imageUrl)}" alt="Product" style="max-width: 100%; max-height: 100%; object-fit: contain;">` 
+                            : `<span style="color: var(--admin-text-muted); font-size: 12px;">📷 Add Image</span>`
+                        }
+                    </div>
+                </div>
+                <div class="form-group">
                     <label>Product Title</label>
                     <input type="text" value="${escapeHtml(product.title)}" onchange="updateProduct(${catIndex}, ${prodIndex}, 'title', this.value)">
                 </div>
@@ -678,12 +692,18 @@ function getNestedValue(obj, path) {
 }
 
 function setNestedValue(obj, path, value) {
-    const keys = path.split('.');
-    const lastKey = keys.pop();
-    const target = keys.reduce((current, key) => {
-        if (!current[key]) current[key] = {};
-        return current[key];
-    }, obj);
+    // Handle array notation like "products.categories[0].products[1].image"
+    const parts = path.replace(/\[(\d+)\]/g, '.$1').split('.');
+    const lastKey = parts.pop();
+    
+    let target = obj;
+    for (const key of parts) {
+        if (target[key] === undefined) {
+            target[key] = isNaN(parseInt(key)) ? {} : [];
+        }
+        target = target[key];
+    }
+    
     target[lastKey] = value;
 }
 
@@ -717,6 +737,179 @@ function showToast(message, type = 'success') {
     }, 3000);
 }
 
+// ===== Image Picker =====
+function setupImagePicker() {
+    const modal = document.getElementById('imagePickerModal');
+    const tabs = document.querySelectorAll('.picker-tab');
+    const panels = document.querySelectorAll('.picker-panel');
+    const dropzone = document.getElementById('picker-dropzone');
+    const fileInput = document.getElementById('picker-file-input');
+    
+    // Tab switching
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const targetTab = tab.dataset.tab;
+            
+            tabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            
+            panels.forEach(p => p.classList.remove('active'));
+            document.getElementById(`panel-${targetTab}`).classList.add('active');
+            
+            // Populate library when switching to it
+            if (targetTab === 'library') {
+                populatePickerLibrary();
+            }
+        });
+    });
+    
+    // Drag and drop in picker
+    if (dropzone) {
+        dropzone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropzone.classList.add('dragover');
+        });
+        
+        dropzone.addEventListener('dragleave', () => {
+            dropzone.classList.remove('dragover');
+        });
+        
+        dropzone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropzone.classList.remove('dragover');
+            const file = e.dataTransfer.files[0];
+            if (file && file.type.startsWith('image/')) {
+                handlePickerFile(file);
+            }
+        });
+    }
+    
+    // File input in picker
+    if (fileInput) {
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                handlePickerFile(file);
+            }
+        });
+    }
+    
+    // Close modal on background click
+    if (modal) {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeImagePicker();
+            }
+        });
+    }
+}
+
+function handlePickerFile(file) {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+        const dataUrl = event.target.result;
+        
+        // Add to media library
+        addToMediaLibrary(file.name, dataUrl);
+        populateMediaGrid();
+        
+        // Apply to target
+        applySelectedImage(dataUrl);
+        
+        showToast('Image uploaded and applied', 'success');
+    };
+    reader.readAsDataURL(file);
+}
+
+function populatePickerLibrary() {
+    const grid = document.getElementById('picker-library-grid');
+    const emptyMsg = document.getElementById('empty-library-msg');
+    
+    if (!grid) return;
+    
+    grid.innerHTML = '';
+    
+    if (mediaLibrary.length === 0) {
+        if (emptyMsg) emptyMsg.style.display = 'block';
+        return;
+    }
+    
+    if (emptyMsg) emptyMsg.style.display = 'none';
+    
+    mediaLibrary.forEach((item, index) => {
+        const div = document.createElement('div');
+        div.className = 'picker-library-item';
+        div.innerHTML = `
+            <img src="${item.url}" alt="${escapeHtml(item.name)}">
+            <div class="select-check">✓</div>
+        `;
+        div.addEventListener('click', () => {
+            // Remove selected from others
+            grid.querySelectorAll('.picker-library-item').forEach(el => el.classList.remove('selected'));
+            div.classList.add('selected');
+            
+            // Apply after a short delay for visual feedback
+            setTimeout(() => {
+                applySelectedImage(item.url);
+                showToast('Image selected', 'success');
+            }, 200);
+        });
+        grid.appendChild(div);
+    });
+}
+
+function openImagePicker(targetElement, contentPath) {
+    currentImageTarget = {
+        element: targetElement,
+        path: contentPath
+    };
+    
+    // Reset to upload tab
+    document.querySelectorAll('.picker-tab').forEach(t => t.classList.remove('active'));
+    document.querySelector('.picker-tab[data-tab="upload"]')?.classList.add('active');
+    document.querySelectorAll('.picker-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('panel-upload')?.classList.add('active');
+    
+    // Clear file input
+    const fileInput = document.getElementById('picker-file-input');
+    if (fileInput) fileInput.value = '';
+    
+    document.getElementById('imagePickerModal').classList.add('active');
+}
+
+window.closeImagePicker = function() {
+    document.getElementById('imagePickerModal').classList.remove('active');
+    currentImageTarget = null;
+};
+
+function applySelectedImage(imageUrl) {
+    if (!currentImageTarget) return;
+    
+    // Update the image element
+    if (currentImageTarget.element) {
+        const img = currentImageTarget.element.querySelector('img') || currentImageTarget.element;
+        if (img.tagName === 'IMG') {
+            img.src = imageUrl;
+        }
+    }
+    
+    // Update content data
+    if (currentImageTarget.path) {
+        setNestedValue(content, currentImageTarget.path, imageUrl);
+        markAsUnsaved();
+    }
+    
+    closeImagePicker();
+}
+
+// Global function to make images editable
+window.makeImageEditable = function(element, contentPath) {
+    element.classList.add('editable-image');
+    element.addEventListener('click', () => {
+        openImagePicker(element, contentPath);
+    });
+};
+
 // ===== Keyboard Shortcuts =====
 document.addEventListener('keydown', (e) => {
     // Ctrl/Cmd + S to save
@@ -729,6 +922,12 @@ document.addEventListener('keydown', (e) => {
     if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'p') {
         e.preventDefault();
         publishToGitHub();
+    }
+    
+    // Escape to close modals
+    if (e.key === 'Escape') {
+        closeImagePicker();
+        closePreviewModal();
     }
 });
 
