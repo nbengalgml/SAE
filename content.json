@@ -1,0 +1,242 @@
+{
+  "site": {
+    "companyName": "Shaham Electronics Aviation Ltd.",
+    "logo": "images/logo.png",
+    "tagline": "Lighting Innovation With Sophisticated Solutions"
+  },
+  "home": {
+    "hero": {
+      "badge": "Israeli Air Force Approved Supplier",
+      "titleLine1": "Lighting Innovation",
+      "titleLine2": "With Sophisticated Solutions",
+      "description": "Over 19 years of expertise in NVG cockpit adaptation and advanced aviation lighting systems. Recognized leader in design development and production for night vision goggles generation III.",
+      "ctaPrimary": "Explore Products",
+      "ctaSecondary": "Get in Touch"
+    },
+    "features": [
+      {
+        "id": "feature-1",
+        "title": "Cockpit Lighting",
+        "description": "Complete NVG cockpit adaptation including light balancing, measurements, and solutions to prevent reflection and interferences.",
+        "icon": "light"
+      },
+      {
+        "id": "feature-2",
+        "title": "Dual Mode Operation",
+        "description": "Exterior lights adaptation allowing aircraft to fly in normal mode visible to naked eye, or covert IR mode visible only through NVG.",
+        "icon": "eye"
+      },
+      {
+        "id": "feature-3",
+        "title": "LED Technology",
+        "description": "Advanced LED modules, edgelight panels, flat displays, and control boxes designed with precision for aviation applications.",
+        "icon": "chip"
+      },
+      {
+        "id": "feature-4",
+        "title": "Easy Integration",
+        "description": "Low cost solutions with minimum changes, easy to install using standard maintenance procedures.",
+        "icon": "gear"
+      }
+    ],
+    "stats": [
+      { "id": "stat-1", "number": "19+", "label": "Years Experience" },
+      { "id": "stat-2", "number": "Gen III", "label": "NVG Compatible" },
+      { "id": "stat-3", "number": "IAF", "label": "Approved Supplier" },
+      { "id": "stat-4", "number": "100%", "label": "Quality Assured" }
+    ],
+    "cta": {
+      "title": "Ready to Upgrade Your Aviation Lighting?",
+      "description": "Contact our team of experts to discuss your NVG adaptation requirements."
+    }
+  },
+  "products": {
+    "header": {
+      "title": "Products & Projects",
+      "subtitle": "Advanced aviation lighting solutions for military and commercial applications"
+    },
+    "categories": [
+      {
+        "id": "cat-nvg",
+        "name": "NVG Cockpit Adaptation",
+        "products": [
+          {
+            "id": "prod-1",
+            "title": "Light Plates",
+            "description": "Custom-designed light plates for cockpit illumination, engineered for NVG compatibility with precise light output control and uniform distribution.",
+            "image": ""
+          },
+          {
+            "id": "prod-2",
+            "title": "Edgelight Panels",
+            "description": "High-performance edgelight panels providing even illumination across instrument panels and displays while maintaining NVG generation III compatibility.",
+            "image": ""
+          },
+          {
+            "id": "prod-3",
+            "title": "Control Boxes",
+            "description": "Precision control boxes for managing cockpit lighting systems, featuring dimming controls and mode switching capabilities.",
+            "image": ""
+          },
+          {
+            "id": "prod-4",
+            "title": "Flat Displays",
+            "description": "NVG-compatible flat panel displays designed for optimal readability in both day and night operations with reduced glare and reflection.",
+            "image": ""
+          },
+          {
+            "id": "prod-5",
+            "title": "LED Modules",
+            "description": "Advanced LED lighting modules with precise wavelength control for NVG compatibility, offering superior brightness and energy efficiency.",
+            "image": ""
+          },
+          {
+            "id": "prod-6",
+            "title": "Light Balancing Systems",
+            "description": "Complete light balancing and measurement solutions ensuring optimal cockpit illumination levels across all lighting conditions.",
+            "image": ""
+          }
+        ]
+      },
+      {
+        "id": "cat-exterior",
+        "name": "Exterior Lights Adaptation",
+        "products": [
+          {
+            "id": "prod-7",
+            "title": "Dual Mode Navigation Lights",
+            "description": "Aircraft navigation lights with dual-mode operation: Normal mode visible to naked eye, and covert IR mode visible only through night vision goggles (Friendly IR mode).",
+            "image": ""
+          },
+          {
+            "id": "prod-8",
+            "title": "Anti-Collision Beacons",
+            "description": "NVG-compatible anti-collision lights featuring infrared position capability for stealth operations while maintaining safety compliance.",
+            "image": ""
+          },
+          {
+            "id": "prod-9",
+            "title": "Covert Mode Systems",
+            "description": "Complete covert lighting systems enabling aircraft to remain invisible to the naked eye while being fully visible through NVG equipment.",
+            "image": ""
+          }
+        ]
+      },
+      {
+        "id": "cat-services",
+        "name": "Integration & Services",
+        "products": [
+          {
+            "id": "prod-10",
+            "title": "Complete Cockpit Adaptation",
+            "description": "End-to-end NVG cockpit adaptation services including assessment, design, installation, and certification support.",
+            "image": ""
+          },
+          {
+            "id": "prod-11",
+            "title": "Testing & Certification",
+            "description": "Comprehensive light measurement and testing services to ensure compliance with military specifications and NVG compatibility standards.",
+            "image": ""
+          },
+          {
+            "id": "prod-12",
+            "title": "Reflection Analysis",
+            "description": "Advanced solutions to identify and eliminate reflections and interferences in the cockpit that could compromise NVG operations.",
+            "image": ""
+          }
+        ]
+      }
+    ],
+    "cta": {
+      "title": "Need a Custom Solution?",
+      "description": "Our engineering team can design and manufacture lighting solutions tailored to your specific aircraft requirements."
+    }
+  },
+  "about": {
+    "header": {
+      "title": "About Us",
+      "subtitle": "Pioneering aviation lighting solutions since the early days"
+    },
+    "sections": [
+      {
+        "id": "about-1",
+        "title": "Our Story",
+        "paragraphs": [
+          "With a background of over nineteen years of experience, Shaham Electronics Aviation is a recognized leader in the design development and production for adaptation of cockpits to night vision goggles (NVG) generation III.",
+          "As an Israeli Air Force Approved Supplier, we have built our reputation on delivering reliable, high-quality aviation lighting solutions that meet the most demanding military specifications.",
+          "Our expertise spans the complete range of cockpit illumination systems, from initial assessment and design through manufacturing and integration."
+        ]
+      },
+      {
+        "id": "about-2",
+        "title": "Our Approach",
+        "paragraphs": [
+          "Our main concept for integration and adaptation is low cost with minimum changes, easy to install with unique solutions, using the standard maintenance procedure.",
+          "We understand that aircraft operators need solutions that can be implemented efficiently without extensive downtime or complex modifications to existing systems.",
+          "This philosophy has guided our product development and earned us the trust of military and commercial aviation customers worldwide."
+        ]
+      },
+      {
+        "id": "about-3",
+        "title": "Our Capabilities",
+        "paragraphs": [
+          "Shaham Electronics Aviation has the capability of a complete NVG cockpit adaptation, including light balancing and measurements, as well as providing solutions to prevent reflection and interferences in the cockpit.",
+          "Our experience in the field of aircraft adaptation for NVG compatibility is in part, as a result of our expertise in designing and manufacturing all types of light plates, edgelight panels, control boxes, flat displays, and LED modules lights."
+        ]
+      }
+    ],
+    "values": [
+      {
+        "id": "value-1",
+        "title": "Quality Assurance",
+        "description": "Every product undergoes rigorous testing to meet military specifications and ensure reliable performance in critical operations."
+      },
+      {
+        "id": "value-2",
+        "title": "Innovation",
+        "description": "Continuous research and development to stay at the forefront of aviation lighting technology and NVG compatibility."
+      },
+      {
+        "id": "value-3",
+        "title": "Partnership",
+        "description": "Working closely with our customers to understand their unique requirements and deliver tailored solutions."
+      }
+    ],
+    "cta": {
+      "title": "Ready to Partner With Us?",
+      "description": "Discover how our expertise can enhance your aviation lighting capabilities."
+    }
+  },
+  "contact": {
+    "header": {
+      "title": "Contact Us",
+      "subtitle": "Get in touch with our team of aviation lighting experts"
+    },
+    "intro": {
+      "title": "Let's Discuss Your Requirements",
+      "description": "Whether you need NVG cockpit adaptation, exterior lighting solutions, or custom engineering services, our experienced team is ready to help."
+    },
+    "details": {
+      "address": {
+        "line1": "8 Ha Melaha St.",
+        "line2": "P.O.Box 8199 Industry Area",
+        "line3": "Natanya South 42293, Israel"
+      },
+      "phone": "972-9-8851511",
+      "fax": "972-9-8851513",
+      "email": "shahamav@netvision.net.il",
+      "hours": {
+        "weekdays": "Sunday - Thursday: 8:00 - 17:00",
+        "friday": "Friday: 8:00 - 13:00"
+      }
+    }
+  },
+  "footer": {
+    "description": "Recognized leader in aviation lighting innovation and NVG cockpit adaptation.",
+    "copyright": "© 2024 Shaham Electronics Aviation Ltd. All rights reserved."
+  },
+  "images": {
+    "gallery": []
+  }
+}
+
