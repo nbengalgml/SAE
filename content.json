@@ -16,7 +16,7 @@
     "features": [
       {
         "id": "feature-1",
-        "title": "Cockpit Lighting-2",
+        "title": "Cockpit Lighting",
         "description": "Complete NVG cockpit adaptation including light balancing, measurements, and solutions to prevent reflection and interferences.",
         "icon": "light"
       },
