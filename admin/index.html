@@ -319,6 +319,33 @@
                             </div>
                         </div>
                     </div>
+                    
+                    <div class="editor-section">
+                        <h2 class="section-title">🔗 GitHub Publishing</h2>
+                        <p style="color: var(--admin-text-secondary); font-size: 13px; margin-bottom: 16px;">
+                            Connect to GitHub to publish changes directly to your website. Your token is stored locally in your browser.
+                        </p>
+                        <div class="form-grid">
+                            <div class="form-group full-width">
+                                <label>GitHub Personal Access Token</label>
+                                <input type="password" id="github-token" placeholder="ghp_xxxxxxxxxxxx or github_pat_xxxxxxxxxxxx">
+                                <span class="upload-hint">Token needs "Contents: Read and Write" permission for the SAE repository</span>
+                            </div>
+                            <div class="form-group">
+                                <label>Repository</label>
+                                <input type="text" value="nbengalgml/SAE" disabled style="opacity: 0.7;">
+                            </div>
+                            <div class="form-group">
+                                <label>Branch</label>
+                                <input type="text" value="main" disabled style="opacity: 0.7;">
+                            </div>
+                            <div class="form-group full-width">
+                                <button class="btn btn-secondary" id="test-github-btn">
+                                    <span>🔌</span> Test Connection
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 
                 <!-- Media Library -->

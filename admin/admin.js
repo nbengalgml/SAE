@@ -5,6 +5,14 @@ let content = {};
 let hasUnsavedChanges = false;
 let mediaLibrary = [];
 
+// GitHub Config
+const GITHUB_CONFIG = {
+    owner: 'nbengalgml',
+    repo: 'SAE',
+    branch: 'main',
+    contentPath: 'content.json'
+};
+
 // DOM Elements
 const saveStatus = document.getElementById('saveStatus');
 const saveBtn = document.getElementById('saveBtn');
@@ -20,8 +28,68 @@ document.addEventListener('DOMContentLoaded', async () => {
     setupFormListeners();
     setupImageUploads();
     setupMediaLibrary();
+    setupGitHubSettings();
     populateEditors();
 });
+
+// ===== GitHub Token Management =====
+function getGitHubToken() {
+    return localStorage.getItem('github_token') || '';
+}
+
+function setGitHubToken(token) {
+    localStorage.setItem('github_token', token);
+}
+
+function setupGitHubSettings() {
+    const tokenInput = document.getElementById('github-token');
+    if (tokenInput) {
+        // Load saved token (show masked)
+        const savedToken = getGitHubToken();
+        if (savedToken) {
+            tokenInput.value = savedToken;
+            tokenInput.type = 'password';
+        }
+        
+        // Save token on change
+        tokenInput.addEventListener('change', (e) => {
+            setGitHubToken(e.target.value);
+            showToast('GitHub token saved', 'success');
+        });
+    }
+    
+    // Test connection button
+    const testBtn = document.getElementById('test-github-btn');
+    if (testBtn) {
+        testBtn.addEventListener('click', testGitHubConnection);
+    }
+}
+
+async function testGitHubConnection() {
+    const token = getGitHubToken();
+    if (!token) {
+        showToast('Please enter a GitHub token first', 'error');
+        return;
+    }
+    
+    try {
+        const response = await fetch(`https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Accept': 'application/vnd.github+json'
+            }
+        });
+        
+        if (response.ok) {
+            showToast('✅ GitHub connection successful!', 'success');
+        } else {
+            const error = await response.json();
+            showToast(`GitHub error: ${error.message}`, 'error');
+        }
+    } catch (error) {
+        showToast('Connection failed: ' + error.message, 'error');
+    }
+}
 
 // ===== Content Management =====
 async function loadContent() {
@@ -111,7 +179,7 @@ function setupFormListeners() {
     saveBtn.addEventListener('click', saveToLocalStorage);
     
     // Publish button
-    publishBtn.addEventListener('click', publishChanges);
+    publishBtn.addEventListener('click', publishToGitHub);
     
     // Preview button
     previewBtn.addEventListener('click', () => {
@@ -510,38 +578,87 @@ window.deleteMedia = function(index) {
     }
 };
 
-// ===== Publish =====
-async function publishChanges() {
-    // Save to localStorage first
-    saveToLocalStorage();
+// ===== Publish to GitHub =====
+async function publishToGitHub() {
+    const token = getGitHubToken();
     
-    // Generate and download the content.json file
-    const blob = new Blob([JSON.stringify(content, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'content.json';
-    a.click();
-    URL.revokeObjectURL(url);
+    if (!token) {
+        showToast('Please set your GitHub token in Site Settings first!', 'error');
+        // Switch to site settings
+        document.querySelector('[data-page="site-settings"]').click();
+        return;
+    }
     
-    showToast('Content exported! Replace content.json with the downloaded file.', 'success');
+    // Show loading state
+    publishBtn.disabled = true;
+    publishBtn.innerHTML = '<span>⏳</span> Publishing...';
     
-    // Also generate updated HTML files info
-    showPublishInstructions();
-}
-
-function showPublishInstructions() {
-    const instructions = `
-To publish your changes:
-
-1. The content.json file has been downloaded
-2. Replace the existing content.json in your website folder
-3. If hosting on GitHub Pages, commit and push the changes
-4. If using Netlify, redeploy or drag the folder again
-
-Your website will automatically load content from the updated JSON file.
-    `;
-    alert(instructions);
+    try {
+        // First, get the current file to get its SHA
+        const getResponse = await fetch(
+            `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.contentPath}?ref=${GITHUB_CONFIG.branch}`,
+            {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Accept': 'application/vnd.github+json'
+                }
+            }
+        );
+        
+        let sha = null;
+        if (getResponse.ok) {
+            const fileData = await getResponse.json();
+            sha = fileData.sha;
+        }
+        
+        // Prepare the content
+        const contentString = JSON.stringify(content, null, 2);
+        const contentBase64 = btoa(unescape(encodeURIComponent(contentString)));
+        
+        // Create commit
+        const updateResponse = await fetch(
+            `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.contentPath}`,
+            {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Accept': 'application/vnd.github+json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    message: `Update content via Admin Panel - ${new Date().toLocaleString()}`,
+                    content: contentBase64,
+                    sha: sha,
+                    branch: GITHUB_CONFIG.branch
+                })
+            }
+        );
+        
+        if (updateResponse.ok) {
+            // Clear local storage since changes are now on GitHub
+            localStorage.removeItem('shaham_content');
+            hasUnsavedChanges = false;
+            updateSaveStatus();
+            
+            showToast('🎉 Published to GitHub successfully!', 'success');
+            
+            // Show info about GitHub Pages update time
+            setTimeout(() => {
+                showToast('Site will update in ~1-2 minutes', 'success');
+            }, 1500);
+        } else {
+            const error = await updateResponse.json();
+            throw new Error(error.message || 'Failed to publish');
+        }
+        
+    } catch (error) {
+        console.error('Publish error:', error);
+        showToast('Publish failed: ' + error.message, 'error');
+    } finally {
+        // Reset button
+        publishBtn.disabled = false;
+        publishBtn.innerHTML = '<span>🚀</span> Publish';
+    }
 }
 
 // ===== Preview Modal =====
@@ -607,6 +724,12 @@ document.addEventListener('keydown', (e) => {
         e.preventDefault();
         saveToLocalStorage();
     }
+    
+    // Ctrl/Cmd + Shift + P to publish
+    if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'p') {
+        e.preventDefault();
+        publishToGitHub();
+    }
 });
 
 // ===== Warn on unsaved changes =====
@@ -616,4 +739,3 @@ window.addEventListener('beforeunload', (e) => {
         e.returnValue = '';
     }
 });
-
