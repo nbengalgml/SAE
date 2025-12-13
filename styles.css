@@ -681,6 +681,15 @@ img {
     line-height: 1.8;
 }
 
+.footer-contact address a {
+    color: var(--color-accent-primary);
+    transition: color var(--transition-fast);
+}
+
+.footer-contact address a:hover {
+    color: var(--color-text-primary);
+}
+
 .footer-bottom {
     border-top: 1px solid var(--color-border);
     padding-top: 30px;
