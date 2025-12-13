@@ -14,24 +14,33 @@ const GITHUB_CONFIG = {
     contentPath: 'content.json'
 };
 
-// DOM Elements
-const saveStatus = document.getElementById('saveStatus');
-const saveBtn = document.getElementById('saveBtn');
-const publishBtn = document.getElementById('publishBtn');
-const previewBtn = document.getElementById('previewBtn');
-const previewModal = document.getElementById('previewModal');
-const toastContainer = document.getElementById('toastContainer');
+// DOM Elements (initialized after DOM loads)
+let saveStatus, saveBtn, publishBtn, previewBtn, previewModal, toastContainer;
 
 // ===== Initialization =====
 document.addEventListener('DOMContentLoaded', async () => {
-    await loadContent();
-    setupNavigation();
-    setupFormListeners();
-    setupImageUploads();
-    setupMediaLibrary();
-    setupGitHubSettings();
-    setupImagePicker();
-    populateEditors();
+    // Initialize DOM references
+    saveStatus = document.getElementById('saveStatus');
+    saveBtn = document.getElementById('saveBtn');
+    publishBtn = document.getElementById('publishBtn');
+    previewBtn = document.getElementById('previewBtn');
+    previewModal = document.getElementById('previewModal');
+    toastContainer = document.getElementById('toastContainer');
+    
+    try {
+        await loadContent();
+        setupNavigation();
+        setupFormListeners();
+        setupImageUploads();
+        setupMediaLibrary();
+        setupGitHubSettings();
+        setupImagePicker();
+        populateEditors();
+        console.log('Admin panel initialized successfully');
+    } catch (error) {
+        console.error('Error initializing admin panel:', error);
+        alert('Error loading admin panel: ' + error.message);
+    }
 });
 
 // ===== GitHub Token Management =====
@@ -100,11 +109,31 @@ async function loadContent() {
         const savedContent = localStorage.getItem('shaham_content');
         if (savedContent) {
             content = JSON.parse(savedContent);
+            console.log('Loaded content from localStorage');
             showToast('Loaded from local storage', 'success');
         } else {
-            // Load from content.json
-            const response = await fetch('../content.json');
-            content = await response.json();
+            // Load from content.json (try multiple paths for different hosting scenarios)
+            let response;
+            const paths = ['../content.json', '/SAE/content.json', 'content.json'];
+            
+            for (const path of paths) {
+                try {
+                    response = await fetch(path);
+                    if (response.ok) {
+                        console.log('Loaded content from:', path);
+                        break;
+                    }
+                } catch (e) {
+                    console.log('Failed to load from:', path);
+                }
+            }
+            
+            if (response && response.ok) {
+                content = await response.json();
+                showToast('Content loaded successfully', 'success');
+            } else {
+                throw new Error('Could not load content.json from any path');
+            }
         }
         
         // Load media library
@@ -112,9 +141,21 @@ async function loadContent() {
         if (savedMedia) {
             mediaLibrary = JSON.parse(savedMedia);
         }
+        
+        console.log('Content loaded:', content);
     } catch (error) {
         console.error('Error loading content:', error);
-        showToast('Error loading content', 'error');
+        showToast('Error loading content: ' + error.message, 'error');
+        
+        // Initialize with empty content structure to prevent further errors
+        content = {
+            site: { companyName: '', logo: '', tagline: '' },
+            home: { hero: {}, features: [], stats: [], cta: {} },
+            products: { header: {}, categories: [], cta: {} },
+            about: { header: {}, sections: [], values: [], cta: {} },
+            contact: { header: {}, intro: {}, details: { address: {}, hours: {} } },
+            footer: {}
+        };
     }
 }
 
@@ -192,36 +233,59 @@ function setupFormListeners() {
 
 // ===== Populate Editors =====
 function populateEditors() {
+    if (!content) {
+        console.error('No content to populate');
+        return;
+    }
+    
     // Populate all inputs with data-path
     document.querySelectorAll('[data-path]').forEach(input => {
         const value = getNestedValue(content, input.dataset.path);
-        if (value !== undefined) {
+        if (value !== undefined && value !== null) {
             input.value = value;
         }
     });
     
-    // Populate features
-    populateFeatures();
+    // Populate features (with safety check)
+    if (content.home?.features) {
+        populateFeatures();
+    }
     
     // Populate stats
-    populateStats();
+    if (content.home?.stats) {
+        populateStats();
+    }
     
     // Populate product categories
-    populateCategories();
+    if (content.products?.categories) {
+        populateCategories();
+    }
     
     // Populate about sections
-    populateAboutSections();
+    if (content.about?.sections) {
+        populateAboutSections();
+    }
     
     // Populate values
-    populateValues();
+    if (content.about?.values) {
+        populateValues();
+    }
     
     // Populate logo preview
-    if (content.site?.logo) {
-        document.getElementById('logo-preview').src = '../' + content.site.logo;
+    const logoPreview = document.getElementById('logo-preview');
+    if (logoPreview && content.site?.logo) {
+        // Handle both relative paths and data URLs
+        if (content.site.logo.startsWith('data:') || content.site.logo.startsWith('http')) {
+            logoPreview.src = content.site.logo;
+        } else {
+            logoPreview.src = '../' + content.site.logo;
+        }
     }
     
     // Populate media library
     populateMediaGrid();
+    
+    console.log('Editors populated');
 }
 
 // ===== Features Editor =====
@@ -715,6 +779,13 @@ function escapeHtml(str) {
 }
 
 function showToast(message, type = 'success') {
+    // Get toast container (might not be initialized yet)
+    const container = toastContainer || document.getElementById('toastContainer');
+    if (!container) {
+        console.log(`Toast (${type}):`, message);
+        return;
+    }
+    
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
     
@@ -729,7 +800,7 @@ function showToast(message, type = 'success') {
         <span class="toast-message">${message}</span>
     `;
     
-    toastContainer.appendChild(toast);
+    container.appendChild(toast);
     
     setTimeout(() => {
         toast.style.animation = 'slideIn 0.3s ease reverse';
