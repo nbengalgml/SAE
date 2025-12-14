@@ -864,6 +864,165 @@ img {
     transform: scale(1.05);
 }
 
+/* Large product card */
+.product-card-large {
+    grid-column: span 2;
+}
+
+@media (max-width: 768px) {
+    .product-card-large {
+        grid-column: span 1;
+    }
+}
+
+.product-includes {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--color-border);
+}
+
+.product-includes h4 {
+    font-family: var(--font-display);
+    font-size: 14px;
+    color: var(--color-accent-primary);
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.product-includes ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.product-includes li {
+    font-size: 14px;
+    color: var(--color-text-secondary);
+    padding: 8px 0;
+    padding-left: 20px;
+    position: relative;
+    line-height: 1.5;
+}
+
+.product-includes li::before {
+    content: '›';
+    position: absolute;
+    left: 0;
+    color: var(--color-accent-primary);
+    font-weight: bold;
+}
+
+.product-includes li strong {
+    color: var(--color-text-primary);
+}
+
+/* Image zoom hint */
+.product-image {
+    cursor: pointer;
+}
+
+.image-zoom-hint {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    width: 32px;
+    height: 32px;
+    background: rgba(0, 0, 0, 0.6);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.image-zoom-hint svg {
+    width: 18px;
+    height: 18px;
+    color: white;
+}
+
+.product-image:hover .image-zoom-hint {
+    opacity: 1;
+}
+
+/* Lightbox */
+.lightbox {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.95);
+    z-index: 10000;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.lightbox.active {
+    display: flex;
+}
+
+.lightbox-content {
+    position: relative;
+    max-width: 90vw;
+    max-height: 90vh;
+    animation: lightboxFadeIn 0.3s ease;
+}
+
+@keyframes lightboxFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.lightbox-content img {
+    max-width: 100%;
+    max-height: 80vh;
+    object-fit: contain;
+    border-radius: 8px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.lightbox-close {
+    position: absolute;
+    top: -40px;
+    right: 0;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 36px;
+    cursor: pointer;
+    padding: 0;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.3s ease;
+}
+
+.lightbox-close:hover {
+    color: var(--color-accent-primary);
+}
+
+#lightbox-caption {
+    text-align: center;
+    color: white;
+    font-family: var(--font-display);
+    font-size: 18px;
+    margin-top: 16px;
+    padding: 0;
+}
+
 .product-content {
     padding: 24px;
 }
